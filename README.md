@@ -1,9 +1,9 @@
-# fluentmaker
+# Chainly
 Make any .NET object a fluent interface regardless if you have the source code or not!
 
-[![NuGet](https://img.shields.io/nuget/v/fluentmaker.svg)](https://www.nuget.org/packages/fluentmaker)
+[![NuGet](https://img.shields.io/nuget/v/Chainly.svg)](https://www.nuget.org/packages/Chainly)
 
-``PM> Install-Package fluentmaker``
+``PM> Install-Package Chainly``
 
 ## Example
 
