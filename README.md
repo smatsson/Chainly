@@ -57,7 +57,7 @@ public interface IAsdfChain
 
 ```
 
-Of couse it also works with built in classes! 
+Of course it also works with built in classes! 
 
 ```csharp
 var buffer = new char[2];
