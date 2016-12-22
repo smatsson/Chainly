@@ -25,7 +25,11 @@ namespace Chainly.Test.Tests
 		{
 			Asdf model = new Asdf("a");
 
-			var chain = model.CreateChain().Then(m => m.ParameterMethod("b")).Then(m => m.ParameterMethod("c")).Then(m => m.ParameterMethod("d", 1)).Then(m => m.GetMyString());
+			var chain = model.CreateChain()
+				.Then(m => m.ParameterMethod("b"))
+				.Then(m => m.ParameterMethod("c"))
+				.Then(m => m.ParameterMethod("d", 1))
+				.Then(m => m.GetMyString());
 
 			Assert.Equal(2, model.ParameterMethodWithOneParameterCount);
 			Assert.Equal(1, model.ParameterMethodWithTwoParametersCount);
