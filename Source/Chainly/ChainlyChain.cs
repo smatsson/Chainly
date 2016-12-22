@@ -21,5 +21,10 @@ namespace Chainly
 
 			return this;
 		}
+
+		public static ChainlyChain<TObject> operator +(ChainlyChain<TObject> chain, Action<TObject> chainedMethod)
+		{
+			return chain.Then(chainedMethod);
+		}
 	}
 }

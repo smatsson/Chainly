@@ -25,11 +25,23 @@ namespace Chainly.Test.Tests
 		{
 			Asdf model = new Asdf("a");
 
-			var chain = model.CreateChain()
+			model.CreateChain()
 				.Then(m => m.ParameterMethod("b"))
 				.Then(m => m.ParameterMethod("c"))
 				.Then(m => m.ParameterMethod("d", 1))
 				.Then(m => m.GetMyString());
+
+			Assert.Equal(2, model.ParameterMethodWithOneParameterCount);
+			Assert.Equal(1, model.ParameterMethodWithTwoParametersCount);
+		}
+
+		[Fact]
+		public void Operator_CanChain()
+		{
+			Asdf model = new Asdf("a");
+
+			var chain = model.CreateChain() + (m => m.ParameterMethod("b")) + (m => m.ParameterMethod("c")) +
+			            (m => m.ParameterMethod("d", 1)) + (m => m.GetMyString());
 
 			Assert.Equal(2, model.ParameterMethodWithOneParameterCount);
 			Assert.Equal(1, model.ParameterMethodWithTwoParametersCount);
