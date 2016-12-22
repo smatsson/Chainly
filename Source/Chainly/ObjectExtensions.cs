@@ -12,5 +12,10 @@ namespace Chainly
 			var type = EmitBuilder.Build(interfaceType, objectType);
 			return (TInterface)Activator.CreateInstance(type, args: item);
 		}
+
+		public static ChainlyChain<TObject> CreateChain<TObject>(this TObject item)
+		{
+			return new ChainlyChain<TObject>(item);
+		}
 	}
 }
