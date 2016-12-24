@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Shouldly;
 using Xunit;
 
 namespace Chainly.Test.Tests
@@ -17,7 +18,7 @@ namespace Chainly.Test.Tests
 
 			var chain = model.CreateChain();
 
-			Assert.Equal(model, chain.Result);
+			chain.Result.ShouldBe(model);
 		}
 
 		[Fact]
@@ -31,8 +32,8 @@ namespace Chainly.Test.Tests
 				.Then(m => m.ParameterMethod("d", 1))
 				.Then(m => m.GetMyString());
 
-			Assert.Equal(2, model.ParameterMethodWithOneParameterCount);
-			Assert.Equal(1, model.ParameterMethodWithTwoParametersCount);
+			model.ParameterMethodWithOneParameterCount.ShouldBe(2);
+			model.ParameterMethodWithTwoParametersCount.ShouldBe(1);
 		}
 
 		[Fact]
@@ -43,8 +44,8 @@ namespace Chainly.Test.Tests
 			var chain = model.CreateChain() + (m => m.ParameterMethod("b")) + (m => m.ParameterMethod("c")) +
 			            (m => m.ParameterMethod("d", 1)) + (m => m.GetMyString());
 
-			Assert.Equal(2, model.ParameterMethodWithOneParameterCount);
-			Assert.Equal(1, model.ParameterMethodWithTwoParametersCount);
+			model.ParameterMethodWithOneParameterCount.ShouldBe(2);
+			model.ParameterMethodWithTwoParametersCount.ShouldBe(1);
 		}
 	}
 }
