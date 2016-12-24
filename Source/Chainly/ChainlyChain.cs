@@ -8,16 +8,16 @@ namespace Chainly
 {
 	public class ChainlyChain<TObject>
 	{
-		public TObject Result { get; private set; }
+		private readonly TObject _item;
 
 		public ChainlyChain(TObject item)
 		{
-			Result = item;
+			_item = item;
 		}
 
 		public ChainlyChain<TObject> Then(Action<TObject> chainedMethod)
 		{
-			chainedMethod(Result);
+			chainedMethod(_item);
 
 			return this;
 		}
@@ -25,6 +25,11 @@ namespace Chainly
 		public static ChainlyChain<TObject> operator +(ChainlyChain<TObject> chain, Action<TObject> chainedMethod)
 		{
 			return chain.Then(chainedMethod);
+		}
+
+		public TObject Value()
+		{
+			return _item;
 		}
 	}
 }

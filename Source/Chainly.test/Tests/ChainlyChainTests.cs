@@ -18,7 +18,7 @@ namespace Chainly.Test.Tests
 
 			var chain = model.CreateChain();
 
-			chain.Result.ShouldBe(model);
+			chain.Value().ShouldBe(model);
 		}
 
 		[Fact]
