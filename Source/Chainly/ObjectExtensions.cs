@@ -13,7 +13,7 @@ namespace Chainly
 			return (TInterface)Activator.CreateInstance(type, args: item);
 		}
 
-		public static ChainlyChain<TObject> CreateChain<TObject>(this TObject item)
+		public static ChainlyChain<TObject> Chain<TObject>(this TObject item)
 		{
 			return new ChainlyChain<TObject>(item);
 		}

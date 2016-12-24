@@ -16,7 +16,7 @@ namespace Chainly.Test.Tests
 		{
 			Asdf model = new Asdf("a");
 
-			var chain = model.CreateChain();
+			var chain = model.Chain();
 
 			chain.Value().ShouldBe(model);
 		}
@@ -26,7 +26,7 @@ namespace Chainly.Test.Tests
 		{
 			Asdf model = new Asdf("a");
 
-			model.CreateChain()
+			model.Chain()
 				.Then(m => m.ParameterMethod("b"))
 				.Then(m => m.ParameterMethod("c"))
 				.Then(m => m.ParameterMethod("d", 1))
@@ -41,7 +41,7 @@ namespace Chainly.Test.Tests
 		{
 			Asdf model = new Asdf("a");
 
-			var chain = model.CreateChain() + (m => m.ParameterMethod("b")) + (m => m.ParameterMethod("c")) +
+			var chain = model.Chain() + (m => m.ParameterMethod("b")) + (m => m.ParameterMethod("c")) +
 			            (m => m.ParameterMethod("d", 1)) + (m => m.GetMyString());
 
 			model.ParameterMethodWithOneParameterCount.ShouldBe(2);
