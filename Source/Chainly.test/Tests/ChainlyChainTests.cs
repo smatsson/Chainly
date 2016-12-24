@@ -22,15 +22,15 @@ namespace Chainly.Test.Tests
 		}
 
 		[Fact]
-		public void Then_CanChain()
+		public void Do_CanChain()
 		{
 			Asdf model = new Asdf("a");
 
 			model.Chain()
-				.Then(m => m.ParameterMethod("b"))
-				.Then(m => m.ParameterMethod("c"))
-				.Then(m => m.ParameterMethod("d", 1))
-				.Then(m => m.GetMyString());
+				.Do(m => m.ParameterMethod("b"))
+				.Do(m => m.ParameterMethod("c"))
+				.Do(m => m.ParameterMethod("d", 1))
+				.Do(m => m.GetMyString());
 
 			model.ParameterMethodWithOneParameterCount.ShouldBe(2);
 			model.ParameterMethodWithTwoParametersCount.ShouldBe(1);

@@ -15,7 +15,7 @@ namespace Chainly
 			_item = item;
 		}
 
-		public ChainlyChain<TObject> Then(Action<TObject> chainedMethod)
+		public ChainlyChain<TObject> Do(Action<TObject> chainedMethod)
 		{
 			chainedMethod(_item);
 
@@ -24,7 +24,7 @@ namespace Chainly
 
 		public static ChainlyChain<TObject> operator +(ChainlyChain<TObject> chain, Action<TObject> chainedMethod)
 		{
-			return chain.Then(chainedMethod);
+			return chain.Do(chainedMethod);
 		}
 
 		public TObject Value()
