@@ -73,6 +73,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Tests\ChainlyChainTests.cs" />
     <Compile Include="Tests\ChainlyTests.cs" />
+    <Compile Include="Tests\PerformanceTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

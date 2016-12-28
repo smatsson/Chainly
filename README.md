@@ -64,7 +64,7 @@ Of course it also works with built in classes!
 ```csharp
 var buffer = new char[2];
 var asdfUpper = "asdf".Chain<IChainString>().CopyTo(0, buffer, 0, 2).Value().ToUpper();
-// buffer[0] == as
+// buffer == ['a', 's']
 // asdfUpper = ASDF
 
 var elapsed = StopWatch.StartNew().Chain<IStopWatchChain>().Stop().Value().Elapsed;
@@ -113,26 +113,28 @@ The action based method allows chaining for any type without the need for an int
 
 ## Example
 ```csharp
-Asdf model = new Asdf("a");
+var model = new Asdf("a");
 
-model.Chain()
+var myString = model.Chain()
 	.Do(m => m.ParameterMethod("b"))
 	.Do(m => m.ParameterMethod("c"))
 	.Do(m => m.ParameterMethod("d", 1))
-	.Do(m => m.GetMyString());
+	.Value()
+	.GetMyString();
 ```
 
 ## Overloaded Operator Example
 It's also possible to use `+` instead of `.Do()`.
 
 ```csharp
-Asdf model = new Asdf("a");
+var model = new Asdf("a");
 
-model.Chain() 
-	+ (m => m.ParameterMethod("b")) 
-	+ (m => m.ParameterMethod("c")) 
-	+ (m => m.ParameterMethod("d", 1)) 
-	+ (m => m.GetMyString());
+var myString = (model.Chain()
+				+ (m => m.ParameterMethod("b"))
+				+ (m => m.ParameterMethod("c"))
+				+ (m => m.ParameterMethod("d", 1)))
+	.Value()
+	.GetMyString();
 ```
 
 ## License
