@@ -5,6 +5,8 @@ Make any .NET object a fluent interface regardless if you have the source code o
 
 ``PM> Install-Package Chainly``
 
+# Reflection.Emit method
+
 ## Example
 
 Given a class `Asdf` we define an interface `IAsdfChain`. We then run the `Chain` extension on the `Asdf` instance and voila! Fluent interface! :) 
@@ -102,6 +104,35 @@ objectWithSomeVoidMethod = objectWithSomeVoidMethod
 							.SomeVoidMethod("B", 2)
 							.Value();
 
+```
+
+# Action based method
+
+## Summary
+The action based method allows chaining for any type without the need for an interface.
+
+## Example
+```csharp
+Asdf model = new Asdf("a");
+
+model.Chain()
+	.Do(m => m.ParameterMethod("b"))
+	.Do(m => m.ParameterMethod("c"))
+	.Do(m => m.ParameterMethod("d", 1))
+	.Do(m => m.GetMyString());
+```
+
+## Overloaded Operator Example
+It's also possible to use `+` instead of `.Do()`.
+
+```csharp
+Asdf model = new Asdf("a");
+
+model.Chain() 
+	+ (m => m.ParameterMethod("b")) 
+	+ (m => m.ParameterMethod("c")) 
+	+ (m => m.ParameterMethod("d", 1)) 
+	+ (m => m.GetMyString());
 ```
 
 ## License
