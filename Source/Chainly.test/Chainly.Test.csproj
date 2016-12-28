@@ -71,6 +71,7 @@
     <Compile Include="Models\Asdf.cs" />
     <Compile Include="Models\InternalModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Tests\ChainlyChainTests.cs" />
     <Compile Include="Tests\ChainlyTests.cs" />
   </ItemGroup>
   <ItemGroup>
