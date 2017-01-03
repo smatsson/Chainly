@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
-using System.Threading;
 
+// ReSharper disable once CheckNamespace
 namespace Chainly
 {
 	internal static class EmitBuilder
@@ -58,15 +58,9 @@ namespace Chainly
 						return Cache[typeId];
 					}
 
-					if (!interfaceType.IsPublic)
-					{
-						throw new ChainlyException($"Interface \"{interfaceType.FullName}\" must be public");
-					}
 
-					if (!objectType.IsPublic)
-					{
-						throw new ChainlyException($"Object \"{objectType.FullName}\" must be public");
-					}
+					AssertPublic(interfaceType);
+					AssertPublic(objectType);
 
 					if (_moduleBuilder == null)
 					{
@@ -80,18 +74,23 @@ namespace Chainly
 					AddConstructor(builder, objectType, itemField);
 
 					// Create methods from interface
-					foreach (var fluentMethod in interfaceType.GetMethods().Where(f => f.ReturnType == interfaceType))
+					foreach (var fluentMethod in interfaceType.CrossGetMethods().Where(f => f.ReturnType == interfaceType))
 					{
 						AddFluentMethod(interfaceType, objectType, builder, itemField, fluentMethod);
 					}
 
-					var valueMethod = interfaceType.GetMethod(ValueMethod);
+					var valueMethod = interfaceType.CrossGetMethod(ValueMethod, new Type[0]);
 					if (valueMethod != null && valueMethod.ReturnType == objectType)
 					{
 						AddValueMethod(builder, objectType, itemField);
 					}
 
+#if NETSTANDARD || NETCORE
+					var type = builder.CreateTypeInfo().AsType();
+#else
 					var type = builder.CreateType();
+#endif
+
 					Cache.Add(typeId, type);
 					return type;
 				}
@@ -106,6 +105,15 @@ namespace Chainly
 			}
 		}
 
+		private static void AssertPublic(Type type)
+		{
+			if (!type.CrossIsPublic())
+			{
+				throw new ChainlyException(
+					$"{(type.CrossIsInterface() ? "Interface" : "Object")} \"{type.FullName}\" must be public");
+			}
+		}
+
 		private static void AddConstructor(TypeBuilder builder, Type objectType, FieldInfo itemField)
 		{
 			var constructor = builder.DefineConstructor(
@@ -116,9 +124,6 @@ namespace Chainly
 				new[] { objectType });
 
 			var generator = constructor.GetILGenerator();
-			generator.Emit(OpCodes.Ldarg_0);
-			// ReSharper disable once AssignNullToNotNullAttribute - Object constructor exists
-			generator.Emit(OpCodes.Call, typeof(object).GetConstructor(new Type[0]));
 			generator.Emit(OpCodes.Ldarg_0);
 			generator.Emit(OpCodes.Ldarg_1);
 			generator.Emit(OpCodes.Stfld, itemField);
@@ -145,7 +150,7 @@ namespace Chainly
 			MethodBase fluentMethod)
 		{
 			var parameters = fluentMethod.GetParameters().Select(f => f.ParameterType).ToArray();
-			var realMethodToRun = objectType.GetMethod(fluentMethod.Name, parameters);
+			var realMethodToRun = objectType.CrossGetMethod(fluentMethod.Name, parameters);
 
 			if (realMethodToRun == null)
 			{
@@ -195,11 +200,21 @@ namespace Chainly
 		private static void CreateModuleBuilder()
 		{
 			var assemblyName = new AssemblyName { Name = DynamicAssemblyName };
-			var thisDomain = Thread.GetDomain();
+
+#if NETSTANDARD || NETCORE
+
+			var assemblyBuilder = AssemblyBuilder.DefineDynamicAssembly(assemblyName, AssemblyBuilderAccess.Run);
+			_moduleBuilder = assemblyBuilder.DefineDynamicModule(assemblyBuilder.GetName().Name);
+
+#else
+
+			var thisDomain = System.Threading.Thread.GetDomain();
 			var assemblyBuilder = thisDomain.DefineDynamicAssembly(assemblyName,
 				AssemblyBuilderAccess.Run);
 
 			_moduleBuilder = assemblyBuilder.DefineDynamicModule(assemblyBuilder.GetName().Name, false);
+
+#endif
 		}
 	}
 }

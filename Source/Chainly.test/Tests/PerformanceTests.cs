@@ -12,11 +12,16 @@ namespace Chainly.Test.Tests
 	{
 		private readonly ITestOutputHelper _output;
 		private readonly List<string> _strings;
-		private const int Iterations = 1_000_000;
+		private const int Iterations = 1000000;
 
-		public PerformanceTests(ITestOutputHelper output)
+		/* 
+		 * dotnet-test-xunit 2.2.0-preview2-build1029 does not display output from ITestOutputHelper
+		 * if the test succeeds. Use a simple Console output helper for now.
+		*/
+		public PerformanceTests(/*ITestOutputHelper output*/)
 		{
-			_output = output;
+			//_output = output;
+			_output = new ConsoleTestOutputHelper();
 			_strings = new List<string>();
 		}
 
@@ -34,7 +39,7 @@ namespace Chainly.Test.Tests
 				_strings.Add(asdf.GetMyString());
 			}
 			watch.Stop();
-			_output.WriteLine($"Time to run {Iterations} iterations: {watch.Elapsed} ms");
+			_output.WriteLine($"Non_Chained_Method_Calls: Time to run {Iterations} iterations: {watch.Elapsed} ms");
 			_strings.Count.ShouldBe(Iterations);
 		}
 
@@ -54,7 +59,7 @@ namespace Chainly.Test.Tests
 					.GetMyString());
 			}
 			watch.Stop();
-			_output.WriteLine($"Time to run {Iterations} iterations: {watch.Elapsed} ms");
+			_output.WriteLine($"EmitBased_Chain_Method_Calls: Time to run {Iterations} iterations: {watch.Elapsed} ms");
 			_strings.Count.ShouldBe(Iterations);
 		}
 
@@ -74,7 +79,7 @@ namespace Chainly.Test.Tests
 					.GetMyString());
 			}
 			watch.Stop();
-			_output.WriteLine($"Time to run {Iterations} iterations: {watch.Elapsed} ms");
+			_output.WriteLine($"ActionBased_Chain_Method_Calls: Time to run {Iterations} iterations: {watch.Elapsed} ms");
 			_strings.Count.ShouldBe(Iterations);
 		}
 
@@ -85,16 +90,16 @@ namespace Chainly.Test.Tests
 			for (var i = 0; i < Iterations; i++)
 			{
 				_strings.Add((new Asdf("Hello world!")
-					              .Chain()
-				              + (m => m.SomeMethod())
-				              + (m => m.SomeOtherMethod())
-				              + (m => m.ParameterMethod("A"))
-				              + (m => m.ParameterMethod("B", 2)))
+								  .Chain()
+							  + (m => m.SomeMethod())
+							  + (m => m.SomeOtherMethod())
+							  + (m => m.ParameterMethod("A"))
+							  + (m => m.ParameterMethod("B", 2)))
 					.Value()
 					.GetMyString());
 			}
 			watch.Stop();
-			_output.WriteLine($"Time to run {Iterations} iterations: {watch.Elapsed} ms");
+			_output.WriteLine($"ActionBased_Operator_Overload_Method_Calls: Time to run {Iterations} iterations: {watch.Elapsed} ms");
 			_strings.Count.ShouldBe(Iterations);
 		}
 	}

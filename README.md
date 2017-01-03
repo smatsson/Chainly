@@ -137,5 +137,9 @@ var myString = (model.Chain()
 	.GetMyString();
 ```
 
+## Project structure
+Chainly.Dotnet.sln - .NET  core project supporting multiple frameworks
+Chainly.net452.sln - Old .NET 4.5.2 solution kept for compatibility
+
 ## License
 This project is licensed under the MIT license, see [LICENSE](LICENSE).

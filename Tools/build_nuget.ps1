@@ -1,42 +1,38 @@
-# Location of nuget.exe which must be present
-$nugetLocation = ".\nuget.exe"
 
 function setVersionInfo() {
 	$assemblyVersion = git describe --abbrev=0 --tags
-	$assemblyInformationalVersion = git describe --tags --long
-	(Get-Content nugetbuild\Properties\AssemblyInfo.cs) -replace `
-		'(\[assembly: AssemblyInformationalVersion\(")([\w\W]*)("\)])', `
-			"[assembly: AssemblyInformationalVersion(""$assemblyVersion, $assemblyInformationalVersion"")]" `
-		| Out-File nugetbuild\Properties\AssemblyInfo.cs
-	(Get-Content nugetbuild\Properties\AssemblyInfo.cs) -replace `
-		'(\[assembly: AssemblyVersion\(")([\w\W]*)("\)])', "[assembly: AssemblyVersion(""$assemblyVersion"")]" `
-		| Out-File nugetbuild\Properties\AssemblyInfo.cs
-	(Get-Content nugetbuild\Properties\AssemblyInfo.cs) -replace `
-		'(\[assembly: AssemblyFileVersion\(")([\w\W]*)("\)])', "[assembly: AssemblyFileVersion(""$assemblyVersion"")]" `
-		| Out-File nugetbuild\Properties\AssemblyInfo.cs
+	$assemblyInformationalVersion = git describe --tags --long	
+	(Get-Content .\Chainly\project.json) -replace "1.0.0-*", "$assemblyVersion-" | Out-File .\Chainly\project.json
 }
 
 function makeBuildFolder() {
-	if(Test-Path -Path ".\nugetbuild\" ){
-		Remove-Item -Recurse -Force .\nugetbuild\
+	if(Test-Path -Path ".\Chainly\" ){
+		Remove-Item -Recurse -Force .\Chainly\
 	}
 	
-	New-Item -ItemType directory .\nugetbuild\
-	robocopy /E ..\Source\chainly\ .\nugetbuild\ /MIR
+	New-Item -ItemType directory .\Chainly\
+	robocopy /E ..\Source\chainly\ .\Chainly\ /MIR
+	copy ..\Source\global.json .\Chainly\
 }
 
 function verifyNuget() {
-	if(!(Test-Path -Path $nugetLocation)) {
-		Throw "Could not find nuget.exe in the provided location: $nugetLocation"
+	if(![bool](Get-Command dotnet -errorAction SilentlyContinue)) {
+		Throw "Could not find dotnet command"
 	}
 }
 
 function createPackage() {
-	& "$nugetLocation" pack .\nugetbuild\chainly.csproj -IncludeReferencedProjects  -Prop Configuration=Release -Build -MSBuildVersion 14
+	cd Chainly\
+	& dotnet pack -c Release
+	cd..
+}
+
+function movePackage() {
+	move Chainly\bin\Release\*.nupkg .\
 }
 
 function cleanup() {
-	Remove-Item -Recurse -Force .\nugetbuild\
+	Remove-Item -Recurse -Force .\Chainly\
 }
 
 verifyNuget
@@ -47,6 +43,7 @@ setVersionInfo
 Write-Host Version info set
 Write-Host Creating package...
 createPackage
+movePackage
 Write-Host Package created
 Write-Host Cleaning up...
 cleanup
